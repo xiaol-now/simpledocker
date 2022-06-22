@@ -16,12 +16,12 @@ const (
 )
 
 func main() {
-
+	println(os.Args[0])
 	if os.Args[0] == "/proc/self/exe" {
 		//容器进程
-		fmt.Printf("current pid %d \n", syscall.Getpid())
+		fmt.Printf("current pid %d\t ppid:%d \n", syscall.Getpid(), syscall.Getppid())
 
-		cmd := exec.Command("sh", "-c", "stress --vm-bytes 200m --vm-keep -m 1")
+		cmd := exec.Command("sh", "-c", "sleep infinity")
 		cmd.SysProcAttr = &syscall.SysProcAttr{}
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
@@ -43,13 +43,10 @@ func main() {
 		panic(err)
 	}
 	// 得到 fork出来进程映射在外部命名空间的pid
-	fmt.Printf("%+v", cmd.Process.Pid)
+	fmt.Printf("fork pid: %+v \n\n", cmd.Process.Pid)
 
 	// 创建子cgroup
 	newCgroup := path.Join(cgroupMemoryHierarchyMount, "cgroup-demo-memory")
-	if err := os.Mkdir(newCgroup, 0755); err != nil {
-		panic(err)
-	}
 	// 将容器进程放到子cgroup中
 	if err := ioutil.WriteFile(path.Join(newCgroup, "tasks"), []byte(strconv.Itoa(cmd.Process.Pid)), 0644); err != nil {
 		panic(err)
