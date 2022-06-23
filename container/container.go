@@ -29,7 +29,7 @@ func NewProcess(options ...Option) *Process {
 }
 
 func (p *Process) Create() error {
-	cmd := exec.Command("/proc/self/exe", "init")
+	cmd := exec.Command("/proc/self/exe", "InitContainer")
 	// 将容器进程跟宿主机的隔离机制
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS | // 隔离主机和域名
@@ -45,7 +45,8 @@ func (p *Process) Create() error {
 	} else {
 		// TODO; 输出到日志文件
 	}
-	// 设置额外文件句柄
+	// 传递给容器进程的文件描述符 fd
+	// 描述符id是3开始，0 Stdin, 1 Stdout, 2 Stderr
 	cmd.ExtraFiles = []*os.File{p.reader}
 	// 容器环境变量
 	cmd.Env = append(os.Environ(), p.conf.Envs...)
