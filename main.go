@@ -1,21 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"path"
-	"strconv"
-	"syscall"
+	"simpledocker/cmd"
+	"simpledocker/logger"
 )
 
-const (
+func main() {
+	if err := cmd.RootCmd.Execute(); err != nil {
+		logger.PanicErr(err)
+	}
+}
+
+/*const (
 	// 挂载了 memory subsystem的hierarchy的根目录位置
 	cgroupMemoryHierarchyMount = "/sys/fs/cgroup/memory"
 )
 
-func main() {
+func main2() {
 	println(os.Args[0])
 	if os.Args[0] == "/proc/self/exe" {
 		//容器进程
@@ -57,3 +58,4 @@ func main() {
 	}
 	cmd.Process.Wait()
 }
+*/
