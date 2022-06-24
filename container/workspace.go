@@ -22,5 +22,13 @@ func (w *Workspace) MountOverlay() error {
 		"upperdir=" + w.PathMountWrite(),
 		"workdir=" + w.PathMountWork(),
 	}
-	return exec.Command("mount", "-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), "/mnt/aufs/merged").Run()
+	return exec.Command("mount", "-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), w.PathMountMerged()).Run()
 }
+
+func (w *Workspace) UmountOverlay() error {
+	return exec.Command("umount", w.PathMountMerged()).Run()
+}
+
+//func (w *Workspace) MountVolume() error {
+//
+//}
