@@ -58,10 +58,10 @@ func (w *Workspace) MountVolume(volume string) {
 	if len(volumes) != 2 {
 		return
 	}
-	src, dst := volumes[0], path.Join(w.PathMountMerged(), volumes[1]) // 宿主:容器
+	src, dst, work := volumes[0], path.Join(w.PathMountMerged(), volumes[1]), VolumeWorkTmpPath(volumes[0]) // 宿主:容器:workdir
 	TryMkdirOrFail(src)
 	TryMkdirOrFail(dst)
-
+	TryMkdirOrFail(work)
 	err := w.mountOverlay(dst, src, VolumeWorkTmpPath(src), dst)
 	if err != nil {
 		Logger.Errorf("Volume mount: %s", err)
