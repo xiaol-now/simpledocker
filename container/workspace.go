@@ -61,10 +61,12 @@ func (w *Workspace) MountVolume(volume string) {
 //UnmountVolume 卸载 Volume
 func (w *Workspace) UnmountVolume(volume string) {
 	volumes := strings.Split(volume, ":")
-	err := w.umountOverlay(volumes[0])
+	dst, work := path.Join(w.PathMountMerged(), volumes[1]), VolumeWorkTmpPath(volumes[0]) // 容器:workdir
+	err := w.umountOverlay(dst)
 	if err != nil {
 		Logger.Errorf("Volume unmount: %s", err)
 	}
+	_ = os.RemoveAll(work)
 }
 
 func (w *Workspace) mountOverlay(readonlyPath, writePath, workPath, mergedPath string) error {
