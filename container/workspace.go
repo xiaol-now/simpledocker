@@ -17,7 +17,8 @@ func NewWorkspace(containerId string, volumes []string) *Workspace {
 	return &Workspace{containerId: containerId, volumes: volumes}
 }
 
-func (w *Workspace) Mount(image string) error {
+// MountFS 挂载文件系统
+func (w *Workspace) MountFS(image string) error {
 	_, readonlyPath, writePath, mergedPath, workPath := w.PathMountOrCreate()
 	err := Decompress(ImageFilePath(image), readonlyPath)
 	if err != nil {
@@ -33,26 +34,15 @@ func (w *Workspace) Mount(image string) error {
 	return nil
 }
 
-func (w *Workspace) Umount() error {
+// UmountFS 卸载文件系统
+func (w *Workspace) UmountFS() error {
 	for _, volume := range w.volumes {
 		w.UnmountVolume(volume)
 	}
 	return w.umountOverlay(w.PathMountMerged())
 }
 
-func (w *Workspace) mountOverlay(readonlyPath, writePath, workPath, mergedPath string) error {
-	dirs := []string{
-		"lowerdir=" + readonlyPath,
-		"upperdir=" + writePath,
-		"workdir=" + workPath,
-	}
-	return exec.Command("mount", "-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), mergedPath).Run()
-}
-
-func (w *Workspace) umountOverlay(path string) error {
-	return exec.Command("umount", path).Run()
-}
-
+// MountVolume 挂载 Volume
 func (w *Workspace) MountVolume(volume string) {
 	volumes := strings.Split(volume, ":")
 	if len(volumes) != 2 {
@@ -68,6 +58,7 @@ func (w *Workspace) MountVolume(volume string) {
 	}
 }
 
+//UnmountVolume 卸载 Volume
 func (w *Workspace) UnmountVolume(volume string) {
 	volumes := strings.Split(volume, ":")
 	err := w.umountOverlay(volumes[0])
@@ -76,8 +67,21 @@ func (w *Workspace) UnmountVolume(volume string) {
 	}
 }
 
+func (w *Workspace) mountOverlay(readonlyPath, writePath, workPath, mergedPath string) error {
+	dirs := []string{
+		"lowerdir=" + readonlyPath,
+		"upperdir=" + writePath,
+		"workdir=" + workPath,
+	}
+	return exec.Command("mount", "-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), mergedPath).Run()
+}
+
+func (w *Workspace) umountOverlay(path string) error {
+	return exec.Command("umount", path).Run()
+}
+
 func (w *Workspace) Delete() error {
-	err := w.Umount()
+	err := w.UmountFS()
 	if err != nil {
 		return err
 	}
