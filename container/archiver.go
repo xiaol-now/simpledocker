@@ -6,11 +6,13 @@ import (
 )
 
 func Compress(srcPath string, dstFile string) error {
-	_, err := exec.Command("tar", "-czf", dstFile+".tar", "-C", srcPath, ".").CombinedOutput()
+	dstFile = dstFile + ".tar"
+	_, err := exec.Command("tar", "-czf", dstFile, "-C", srcPath, ".").CombinedOutput()
 	return err
 }
 
 func Decompress(srcFile string, dstPath string) error {
+	srcFile = srcFile + ".tar"
 	if !ExistFile(srcFile) {
 		return errors.New("file not exist: " + srcFile)
 	}

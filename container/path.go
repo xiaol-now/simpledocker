@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	. "simpledocker/logger"
+	"strings"
 )
 
 const (
@@ -12,6 +13,9 @@ const (
 	LibraryPath          = "/var/lib/simpledocker"
 	ImagePath            = "/var/lib/simpledocker/image"
 )
+
+type ProcessPath struct {
+}
 
 func (w *Workspace) PathRuntime() string {
 	return path.Join(RuntimeContainerPath, w.containerId)
@@ -46,6 +50,10 @@ func (w *Workspace) PathMountOrCreate() (mountPath, readonlyPath, writePath, mer
 	TryMkdirOrFail(mergedPath)
 	TryMkdirOrFail(workPath)
 	return
+}
+
+func VolumeWorkTmpPath(volumePath string) string {
+	return path.Join("/tmp", strings.ReplaceAll(volumePath, string(os.PathSeparator), "_"))
 }
 
 func ImageFilePath(image string) string {

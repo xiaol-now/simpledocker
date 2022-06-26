@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestWorkspace_MountOverlay(t *testing.T) {
+func TestWorkspace_Mount(t *testing.T) {
 	tests := []struct {
 		name string
 		Id   string
@@ -16,8 +16,8 @@ func TestWorkspace_MountOverlay(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := NewWorkspace(tt.Id)
-			assert.NoError(t, w.MountOverlay("busybox"))
+			w := NewWorkspace(tt.Id, nil)
+			assert.NoError(t, w.Mount("busybox"))
 			f, err := os.Stat(w.PathMountMerged())
 			assert.NoError(t, err)
 			assert.True(t, f.IsDir())
