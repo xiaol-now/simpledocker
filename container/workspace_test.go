@@ -17,7 +17,7 @@ func TestWorkspace_MountOverlay(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := NewWorkspace(tt.Id)
-			assert.NoError(t, w.MountOverlay())
+			assert.NoError(t, w.MountOverlay("busybox"))
 			f, err := os.Stat(w.PathMountMerged())
 			assert.NoError(t, err)
 			assert.True(t, f.IsDir())

@@ -2,12 +2,12 @@ package main
 
 import (
 	"simpledocker/cmd"
-	"simpledocker/logger"
+	. "simpledocker/logger"
 )
 
 func main() {
 	if err := cmd.RootCmd.Execute(); err != nil {
-		logger.PanicErr(err)
+		Logger.Panic(err)
 	}
 }
 

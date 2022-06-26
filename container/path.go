@@ -3,7 +3,7 @@ package container
 import (
 	"os"
 	"path"
-	"simpledocker/logger"
+	. "simpledocker/logger"
 )
 
 const (
@@ -24,32 +24,54 @@ func (w *Workspace) RuntimeLog() string {
 	return path.Join(RuntimeContainerPath, w.containerId, "container.log")
 }
 
-func (w *Workspace) PathMount() string {
-	return path.Join(LibraryPath, w.containerId)
-}
-
-func (w *Workspace) PathMountReadonly() string {
-	return path.Join(w.PathMount(), "lower")
-}
-
-func (w *Workspace) PathMountWrite() string {
-	return path.Join(w.PathMount(), "upper")
-}
-
 func (w *Workspace) PathMountMerged() string {
-	return path.Join(w.PathMount(), "merged")
+	_, _, _, mergedPath, _ := w.PathMount()
+	return mergedPath
 }
 
-func (w *Workspace) PathMountWork() string {
-	return path.Join(w.PathMount(), "work")
+func (w *Workspace) PathMount() (mountPath, readonlyPath, writePath, mergedPath, workPath string) {
+	dir := path.Join(LibraryPath, w.containerId)
+	return dir,
+		path.Join(dir, "lower"),
+		path.Join(dir, "upper"),
+		path.Join(dir, "merged"),
+		path.Join(dir, "work")
 }
 
-func tryMkdir(path string) {
-	_, err := os.Stat(path)
-	if err != nil && os.IsNotExist(err) {
-		err = os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			logger.Fatal("mkdir"+path, map[string]interface{}{"err": err})
-		}
+func (w *Workspace) PathMountOrCreate() (mountPath, readonlyPath, writePath, mergedPath, workPath string) {
+	mountPath, readonlyPath, writePath, mergedPath, workPath = w.PathMount()
+	TryMkdirOrFail(mountPath)
+	TryMkdirOrFail(readonlyPath)
+	TryMkdirOrFail(writePath)
+	TryMkdirOrFail(mergedPath)
+	TryMkdirOrFail(workPath)
+	return
+}
+
+func ImageFilePath(image string) string {
+	return path.Join(ImagePath, image)
+}
+
+func TryMkdirOrFail(path string) {
+	if err := TryMkdir(path); err != nil {
+		Logger.Fatalf("mkdir %#v err: %#v", path, err)
 	}
+}
+
+func TryMkdir(path string) error {
+	if !ExistDir(path) {
+		return os.MkdirAll(path, os.ModePerm)
+	}
+	return nil
+}
+
+// ExistDir 判断目录是否存在
+func ExistDir(dirname string) bool {
+	fi, err := os.Stat(dirname)
+	return (err == nil || os.IsExist(err)) && fi.IsDir()
+}
+
+func ExistFile(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil || os.IsExist(err)
 }

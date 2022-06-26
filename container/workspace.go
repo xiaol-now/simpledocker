@@ -13,16 +13,18 @@ func NewWorkspace(containerId string) *Workspace {
 	return &Workspace{containerId: containerId}
 }
 
-func (w *Workspace) MountOverlay() error {
-	tryMkdir(w.PathMountReadonly())
-	tryMkdir(w.PathMountWrite())
-	tryMkdir(w.PathMountMerged())
-	dirs := []string{
-		"lowerdir=" + w.PathMountReadonly(),
-		"upperdir=" + w.PathMountWrite(),
-		"workdir=" + w.PathMountWork(),
+func (w *Workspace) MountOverlay(image string) error {
+	_, readonlyPath, writePath, mergedPath, workPath := w.PathMountOrCreate()
+	err := Decompress(ImageFilePath(image), readonlyPath)
+	if err != nil {
+		return err
 	}
-	return exec.Command("mount", "-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), w.PathMountMerged()).Run()
+	dirs := []string{
+		"lowerdir=" + readonlyPath,
+		"upperdir=" + writePath,
+		"workdir=" + workPath,
+	}
+	return exec.Command("mount", "-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), mergedPath).Run()
 }
 
 func (w *Workspace) UmountOverlay() error {

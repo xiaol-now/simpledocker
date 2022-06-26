@@ -11,4 +11,6 @@ var RootCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(RunCmd)
 	RootCmd.AddCommand(InitContainerCmd)
+	RootCmd.AddCommand(ImportCmd)
+	RootCmd.AddCommand(ImageCmd)
 }

@@ -32,11 +32,11 @@ func (p *Process) Create() error {
 	cmd := exec.Command("/proc/self/exe", "InitContainer")
 	// 将容器进程跟宿主机的隔离机制
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUTS | // 隔离主机和域名
-			syscall.CLONE_NEWPID | // 隔离 pid (process id)
-			syscall.CLONE_NEWNS | // 隔离 mount 挂载点
-			syscall.CLONE_NEWNET | // 隔离 Network
-			syscall.CLONE_NEWIPC, // 隔离 System V IPC
+		//Cloneflags: syscall.CLONE_NEWUTS | // 隔离主机和域名
+		//	syscall.CLONE_NEWPID | // 隔离 pid (process id)
+		//	syscall.CLONE_NEWNS | // 隔离 mount 挂载点
+		//	syscall.CLONE_NEWNET | // 隔离 Network
+		//	syscall.CLONE_NEWIPC, // 隔离 System V IPC
 	}
 	if p.conf.TTY {
 		cmd.Stdout = os.Stdout
