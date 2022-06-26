@@ -76,12 +76,12 @@ func (w *Workspace) mountOverlay(readonlyPath, writePath, workPath, mergedPath s
 		"workdir=" + workPath,
 	}
 	cmd := []string{"-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), mergedPath}
-	Logger.Infof("Workspace mount: \n\t mount %s", strings.Join(cmd, " "))
+	Logger.Infof("Workspace mount: \n\tmount %s", strings.Join(cmd, " "))
 	return exec.Command("mount", cmd...).Run()
 }
 
 func (w *Workspace) umountOverlay(path string) error {
-	Logger.Infof("Workspace umount: \n\t%s", path)
+	Logger.Infof("Workspace umount: \n\tumount%s", path)
 	return exec.Command("umount", path).Run()
 }
 

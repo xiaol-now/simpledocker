@@ -22,11 +22,11 @@ func main() {
 	}
 
 	// 解除挂载
-	volumnes = []string{
-		"/tmp/volume1:/root",
-		"/tmp/volume2:/tmp/volume2",
-	}
-	w = container.NewWorkspace("3ac1da1f871cc491f90cefcf80811d01", volumnes)
+	//volumnes = []string{
+	//	"/tmp/volume1:/root",
+	//	"/tmp/volume2:/tmp/volume2",
+	//}
+	//w = container.NewWorkspace("3ac1da1f871cc491f90cefcf80811d01", volumnes)
 	err = w.UmountFS()
 	if err != nil {
 		Logger.Panic(err)
