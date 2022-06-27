@@ -81,11 +81,11 @@ func (w *Workspace) mountOverlay(readonlyPath, writePath, workPath, mergedPath s
 }
 
 func (w *Workspace) umountOverlay(path string) error {
-	Logger.Infof("Workspace umount: \n\tumount%s", path)
+	Logger.Infof("Workspace umount: \n\tumount %s", path)
 	return exec.Command("umount", path).Run()
 }
 
-func (w *Workspace) Delete() error {
+func (w *Workspace) Remove() error {
 	err := w.UmountFS()
 	if err != nil {
 		return err

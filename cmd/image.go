@@ -12,7 +12,7 @@ var ImageCmd = &cobra.Command{
 		_ = container.TryMkdir(container.ImagePath)
 		files, _ := ioutil.ReadDir(container.ImagePath)
 		for _, f := range files {
-			println(f.Name())
+			println(f.Name(), f.ModTime(), f.Size())
 		}
 	},
 }

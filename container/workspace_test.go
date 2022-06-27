@@ -2,11 +2,17 @@ package container
 
 import (
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
 func TestWorkspace_Mount(t *testing.T) {
+	// 挂载目录
+	assert.NoError(t, TryMkdir(ImagePath))
+	assert.NoError(t, ImportImage("container/testdata/busybox.tar", ImagePath))
+	volumnes := []string{
+		"/tmp/volume1:/root",
+		"/tmp/volume2:/tmp/volume2",
+	}
 	tests := []struct {
 		name string
 		Id   string
@@ -16,11 +22,9 @@ func TestWorkspace_Mount(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := NewWorkspace(tt.Id, nil)
+			w := NewWorkspace(tt.Id, volumnes)
 			assert.NoError(t, w.MountFS("busybox"))
-			f, err := os.Stat(w.PathMountMerged())
-			assert.NoError(t, err)
-			assert.True(t, f.IsDir())
+			assert.NoError(t, w.Remove())
 		})
 	}
 }

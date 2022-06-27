@@ -7,7 +7,7 @@ import (
 )
 
 var ImportCmd = &cobra.Command{
-	Use:   "import image",
+	Use:   "import IMAGE",
 	Short: "Import image",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
