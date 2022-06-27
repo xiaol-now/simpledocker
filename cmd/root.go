@@ -12,5 +12,9 @@ func init() {
 	RootCmd.AddCommand(RunCmd)
 	RootCmd.AddCommand(InitContainerCmd)
 	RootCmd.AddCommand(ImportCmd)
+	RootCmd.AddCommand(InfoCmd)
 	RootCmd.AddCommand(ImageCmd)
+	RootCmd.AddCommand(RemoveContainerCmd)
+	RootCmd.AddCommand(RemoveImageCmd)
+	RootCmd.AddCommand(RemoveImageCmd)
 }
