@@ -54,7 +54,7 @@ func (w *Workspace) MountVolume(volume string) {
 	TryMkdirOrFail(work)
 	err := w.mountOverlay(dst, src, VolumeWorkTmpPath(src), dst)
 	if err != nil {
-		Logger.Errorf("Volume mount: %s", err)
+		Logger.Fatalf("Volume mount: %s", err)
 	}
 }
 
@@ -64,7 +64,7 @@ func (w *Workspace) UnmountVolume(volume string) {
 	dst, work := path.Join(w.PathMountMerged(), volumes[1]), VolumeWorkTmpPath(volumes[0]) // 容器:workdir
 	err := w.umountOverlay(dst)
 	if err != nil {
-		Logger.Errorf("Volume unmount: %s", err)
+		Logger.Fatalf("Volume unmount: %s", err)
 	}
 	_ = os.RemoveAll(work)
 }
