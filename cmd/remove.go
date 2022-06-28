@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"simpledocker/container"
+	"strings"
 )
 
 var RemoveImageCmd = &cobra.Command{
@@ -14,7 +15,7 @@ var RemoveImageCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		files, _ := ioutil.ReadDir(container.ImagePath)
 		for _, f := range files {
-			if InArray(f.Name(), args) {
+			if InPrefixArray(f.Name(), args) {
 				_ = os.Remove(f.Name())
 			}
 		}
@@ -30,9 +31,9 @@ var RemoveContainerCmd = &cobra.Command{
 	},
 }
 
-func InArray(needle string, haystack []string) bool {
+func InPrefixArray(needle string, haystack []string) bool {
 	for _, s := range haystack {
-		if needle == s {
+		if strings.HasPrefix(s, needle) {
 			return true
 		}
 	}

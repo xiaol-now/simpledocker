@@ -5,7 +5,7 @@ import (
 )
 
 var RootCmd = &cobra.Command{
-	Short: "This is a simple container",
+	Short: "这是一个用golang实现的docker",
 }
 
 func init() {
@@ -13,7 +13,8 @@ func init() {
 	RootCmd.AddCommand(InitContainerCmd)
 	RootCmd.AddCommand(ImportCmd)
 	RootCmd.AddCommand(InfoCmd)
-	RootCmd.AddCommand(ImageCmd)
+	RootCmd.AddCommand(ImageListCmd)
+	RootCmd.AddCommand(ProcessListCmd)
 	RootCmd.AddCommand(RemoveContainerCmd)
 	RootCmd.AddCommand(RemoveImageCmd)
 	RootCmd.AddCommand(RemoveImageCmd)

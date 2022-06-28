@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-var RunParam struct {
+type RunParam struct {
 	Id      string
 	Name    string
 	TTY     bool
@@ -23,6 +23,8 @@ var RunParam struct {
 	Cmd     []string
 }
 
+var ProcessRunParam RunParam
+
 func Run() {
 	process := NewProcess()
 	if err := process.Start(); err != nil {
@@ -33,8 +35,8 @@ func Run() {
 }
 
 func NewProcess() *exec.Cmd {
-	args := append([]string{"InitContainer"}, RunParam.Cmd...)
-	Logger.Debugf("Init container cmd: %s", strings.Join(RunParam.Cmd, " "))
+	args := append([]string{"InitContainer"}, ProcessRunParam.Cmd...)
+	Logger.Debugf("Init container cmd: %s", strings.Join(ProcessRunParam.Cmd, " "))
 	cmd := exec.Command("/proc/self/exe", args...)
 	// 将容器进程跟宿主机的隔离机制
 	cmd.SysProcAttr = &syscall.SysProcAttr{
@@ -44,7 +46,7 @@ func NewProcess() *exec.Cmd {
 			syscall.CLONE_NEWNET | // 隔离 Network
 			syscall.CLONE_NEWIPC, // 隔离 System V IPC
 	}
-	if RunParam.TTY {
+	if ProcessRunParam.TTY {
 		cmd.Stdout = os.Stdout
 		cmd.Stdin = os.Stdin
 		cmd.Stderr = os.Stderr
@@ -52,14 +54,14 @@ func NewProcess() *exec.Cmd {
 		// TODO; 输出到日志文件
 	}
 	// 指定容器初始化后的工作目录
-	w := NewWorkspace(RunParam.Id, RunParam.Volumes)
-	err := w.MountFS(RunParam.Image)
+	w := NewWorkspace(ProcessRunParam.Id, ProcessRunParam.Volumes)
+	err := w.MountFS(ProcessRunParam.Image)
 	if err != nil {
 		_ = w.Remove()
 		Logger.Fatalln("MountFS: ", err)
 	}
-	cmd.Dir = w.PathMountMerged()
-	cmd.Env = append(os.Environ(), RunParam.Env...)
+	cmd.Dir = w.ProcessPath.PathMountMerged()
+	cmd.Env = append(os.Environ(), ProcessRunParam.Env...)
 	return cmd
 }
 

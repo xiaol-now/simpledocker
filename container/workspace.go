@@ -9,12 +9,16 @@ import (
 )
 
 type Workspace struct {
+	ProcessPath
 	containerId string
 	volumes     []string
 }
 
 func NewWorkspace(containerId string, volumes []string) *Workspace {
-	return &Workspace{containerId: containerId, volumes: volumes}
+	return &Workspace{
+		volumes:     volumes,
+		ProcessPath: ProcessPath{containerId: containerId},
+	}
 }
 
 // MountFS 挂载文件系统
@@ -76,12 +80,12 @@ func (w *Workspace) mountOverlay(readonlyPath, writePath, workPath, mergedPath s
 		"workdir=" + workPath,
 	}
 	cmd := []string{"-t", "overlay", "overlay", "-o", strings.Join(dirs, ","), mergedPath}
-	Logger.Infof("Workspace mount: \n\tmount %s", strings.Join(cmd, " "))
+	Logger.Debugf("Workspace mount: \n\tmount %s", strings.Join(cmd, " "))
 	return exec.Command("mount", cmd...).Run()
 }
 
 func (w *Workspace) umountOverlay(path string) error {
-	Logger.Infof("Workspace umount: \n\tumount %s", path)
+	Logger.Debugf("Workspace umount: \n\tumount %s", path)
 	return exec.Command("umount", path).Run()
 }
 

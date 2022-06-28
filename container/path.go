@@ -15,26 +15,27 @@ const (
 )
 
 type ProcessPath struct {
+	containerId string
 }
 
-func (w *Workspace) PathRuntime() string {
-	return path.Join(RuntimeContainerPath, w.containerId)
+func (p *ProcessPath) PathRuntime() string {
+	return path.Join(RuntimeContainerPath, p.containerId)
 }
 
-func (w *Workspace) RuntimeInfo() string {
-	return path.Join(RuntimeContainerPath, w.containerId, "info.json")
+func (p *ProcessPath) PathRuntimeInfo() string {
+	return path.Join(RuntimeContainerPath, p.containerId, "info.json")
 }
-func (w *Workspace) RuntimeLog() string {
-	return path.Join(RuntimeContainerPath, w.containerId, "container.log")
+func (p *ProcessPath) PathRuntimeLog() string {
+	return path.Join(RuntimeContainerPath, p.containerId, "container.log")
 }
 
-func (w *Workspace) PathMountMerged() string {
-	_, _, _, mergedPath, _ := w.PathMount()
+func (p *ProcessPath) PathMountMerged() string {
+	_, _, _, mergedPath, _ := p.PathMount()
 	return mergedPath
 }
 
-func (w *Workspace) PathMount() (mountPath, readonlyPath, writePath, mergedPath, workPath string) {
-	dir := path.Join(LibraryPath, w.containerId)
+func (p *ProcessPath) PathMount() (mountPath, readonlyPath, writePath, mergedPath, workPath string) {
+	dir := path.Join(LibraryPath, p.containerId)
 	return dir,
 		path.Join(dir, "lower"),
 		path.Join(dir, "upper"),
@@ -42,8 +43,8 @@ func (w *Workspace) PathMount() (mountPath, readonlyPath, writePath, mergedPath,
 		path.Join(dir, "work")
 }
 
-func (w *Workspace) PathMountOrCreate() (mountPath, readonlyPath, writePath, mergedPath, workPath string) {
-	mountPath, readonlyPath, writePath, mergedPath, workPath = w.PathMount()
+func (p *ProcessPath) PathMountOrCreate() (mountPath, readonlyPath, writePath, mergedPath, workPath string) {
+	mountPath, readonlyPath, writePath, mergedPath, workPath = p.PathMount()
 	TryMkdirOrFail(mountPath)
 	TryMkdirOrFail(readonlyPath)
 	TryMkdirOrFail(writePath)
