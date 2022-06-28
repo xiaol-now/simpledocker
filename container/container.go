@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	. "simpledocker/logger"
+	"strings"
 	"syscall"
 )
 
@@ -33,6 +34,7 @@ func Run() {
 
 func NewProcess() *exec.Cmd {
 	args := append([]string{"InitContainer"}, RunParam.Cmd...)
+	Logger.Debugf("Init container cmd: %s", strings.Join(RunParam.Cmd, " "))
 	cmd := exec.Command("/proc/self/exe", args...)
 	// 将容器进程跟宿主机的隔离机制
 	cmd.SysProcAttr = &syscall.SysProcAttr{

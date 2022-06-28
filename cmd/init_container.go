@@ -13,8 +13,8 @@ var InitContainerCmd = &cobra.Command{
 	Hidden: true,
 	Short:  "Init container process run user's process in container",
 	Run: func(cmd *cobra.Command, args []string) {
-		Logger.Infof("Run init container: %#v", args)
-		//SetUpMount(args)
+		Logger.Debugf("Run init container: %#v", args)
+		SetUpMount(args)
 	},
 }
 
