@@ -21,7 +21,7 @@ type ProcessInfo struct {
 	Env         []string           `json:"env"`
 	Cmd         []string           `json:"cmd"`
 	State       ProcessState       `json:"state"`
-	Mount       []string           `json:"mount"`
+	Volume      []string           `json:"volume"`
 	GraphDriver ProcessGraphDriver `json:"graph_driver"`
 	Network     struct{}           `json:"network"`
 }
@@ -42,14 +42,22 @@ type ProcessGraphDriver struct {
 	MergedDir   string `json:"merged_dir"`
 }
 
+func (p *ProcessInfo) Workspace() *Workspace {
+	return NewWorkspace(p.Id, p.Volume)
+}
+func (p *ProcessInfo) Stop() {
+	// 停止进程
+}
+
 func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {
 	_, readonlyPath, writePath, mergedPath, workPath := w.PathMount()
 	p := &ProcessInfo{
-		Id:    param.Id,
-		Name:  param.Name,
-		Env:   param.Env,
-		Cmd:   param.Cmd,
-		State: state,
+		Id:     param.Id,
+		Name:   param.Name,
+		Env:    param.Env,
+		Cmd:    param.Cmd,
+		Volume: w.volumes,
+		State:  state,
 		GraphDriver: ProcessGraphDriver{
 			Type:        "overlay",
 			ReadonlyDir: readonlyPath,
@@ -63,7 +71,8 @@ func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {
 	_ = encoder.Encode(p)
 }
 
-func FindProcessInfo(p ProcessPath) (pi *ProcessInfo) {
+func FindProcessInfo(id string) (pi *ProcessInfo) {
+	p := ProcessPath{containerId: id}
 	_ = TryMkdir(p.PathRuntime())
 	dirs, err := ioutil.ReadDir(p.PathRuntime())
 	if err != nil {
@@ -86,7 +95,7 @@ func FindProcessInfo(p ProcessPath) (pi *ProcessInfo) {
 	return nil
 }
 
-func ListProcessInfo() []string {
+func ListContainerId() []string {
 	dirs, err := ioutil.ReadDir(RuntimeContainerPath)
 	if err != nil {
 		return nil

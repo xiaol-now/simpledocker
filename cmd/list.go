@@ -37,7 +37,7 @@ var ProcessListCmd = &cobra.Command{
 	Use:   "ps",
 	Short: "List containers",
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, p := range container.ListProcessInfo() {
+		for _, p := range container.ListContainerId() {
 			println(p)
 		}
 	},

@@ -17,4 +17,5 @@ func init() {
 	RootCmd.AddCommand(ProcessListCmd)
 	RootCmd.AddCommand(RemoveContainerCmd)
 	RootCmd.AddCommand(RemoveImageCmd)
+	RootCmd.AddCommand(StopContainerCmd)
 }

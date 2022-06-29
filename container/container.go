@@ -32,7 +32,9 @@ func Run() {
 		Logger.Fatalf("Container start:%v", err)
 		return
 	}
-	_ = process.Wait()
+	if ProcessRunParam.TTY {
+		_ = process.Wait()
+	}
 }
 
 func NewProcess() *exec.Cmd {
@@ -47,13 +49,6 @@ func NewProcess() *exec.Cmd {
 			syscall.CLONE_NEWNET | // 隔离 Network
 			syscall.CLONE_NEWIPC, // 隔离 System V IPC
 	}
-	if ProcessRunParam.TTY {
-		cmd.Stdout = os.Stdout
-		cmd.Stdin = os.Stdin
-		cmd.Stderr = os.Stderr
-	} else {
-		// TODO; 输出到日志文件
-	}
 	// 指定容器初始化后的工作目录
 	w := NewWorkspace(ProcessRunParam.Id, ProcessRunParam.Volumes)
 	err := w.MountFS(ProcessRunParam.Image)
@@ -61,6 +56,16 @@ func NewProcess() *exec.Cmd {
 		_ = w.Remove()
 		Logger.Fatalln("MountFS: ", err)
 	}
+	if ProcessRunParam.TTY {
+		cmd.Stdout = os.Stdout
+		cmd.Stdin = os.Stdin
+		cmd.Stderr = os.Stderr
+	} else {
+		_ = TryMkdir(w.PathRuntime())
+		l, _ := os.Create(w.PathRuntimeLog())
+		cmd.Stdout = l
+	}
+
 	cmd.Dir = w.ProcessPath.PathMountMerged()
 	cmd.Env = append(os.Environ(), ProcessRunParam.Env...)
 	SetProcessInfo(ProcessRunParam, w, ProcessState{

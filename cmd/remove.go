@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"simpledocker/container"
+	. "simpledocker/logger"
 	"strings"
 )
 
@@ -27,7 +28,19 @@ var RemoveContainerCmd = &cobra.Command{
 	Short: "Remove one or more containers",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		//files, _ := ioutil.ReadDir(container.RuntimeContainerPath)
+		Ids := container.ListContainerId()
+		for _, arg := range args {
+			if !InPrefixArray(arg, Ids) {
+				continue
+			}
+			info := container.FindProcessInfo(arg)
+			if info != nil {
+				err := info.Workspace().Remove()
+				if err != nil {
+					Logger.Errorf("Remove Container fail: %s", info.Id)
+				}
+			}
+		}
 	},
 }
 
