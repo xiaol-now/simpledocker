@@ -8,6 +8,7 @@ import (
 	. "simpledocker/logger"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type RunParam struct {
@@ -62,6 +63,13 @@ func NewProcess() *exec.Cmd {
 	}
 	cmd.Dir = w.ProcessPath.PathMountMerged()
 	cmd.Env = append(os.Environ(), ProcessRunParam.Env...)
+	SetProcessInfo(ProcessRunParam, w, ProcessState{
+		Status:     RUNNING,
+		Pid:        cmd.Process.Pid,
+		StartedAt:  time.Now(),
+		ExitCode:   0,
+		FinishedAt: nil,
+	})
 	return cmd
 }
 

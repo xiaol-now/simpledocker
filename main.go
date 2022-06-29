@@ -1,8 +1,8 @@
 package main
 
 import (
+	"log"
 	"simpledocker/cmd"
-	. "simpledocker/logger"
 )
 
 func main() {
@@ -33,6 +33,6 @@ func main() {
 	//}
 
 	if err := cmd.RootCmd.Execute(); err != nil {
-		Logger.Panic(err)
+		log.Fatalln(err)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 )
 
 type ProcessStatus string
@@ -15,33 +16,33 @@ const (
 )
 
 type ProcessInfo struct {
-	Id          string
-	Name        string
-	Env         []string
-	Cmd         []string
-	State       ProcessState
-	Mount       []string // 挂载目录 /path:path
-	GraphDriver ProcessGraphDriver
-	Network     struct{}
+	Id          string             `json:"id"`
+	Name        string             `json:"name"`
+	Env         []string           `json:"env"`
+	Cmd         []string           `json:"cmd"`
+	State       ProcessState       `json:"state"`
+	Mount       []string           `json:"mount"`
+	GraphDriver ProcessGraphDriver `json:"graph_driver"`
+	Network     struct{}           `json:"network"`
 }
 
 type ProcessState struct {
-	Status     ProcessStatus // 容器状态
-	Pid        int           // 容器Pid
-	StartedAt  string        // 最新的启动时间
-	ExitCode   int           // 上一次停止状态
-	FinishedAt string        // 上一次停止日期
+	Status     ProcessStatus `json:"status"`      // 容器状态
+	Pid        int           `json:"pid"`         // 容器Pid
+	StartedAt  time.Time     `json:"started_at"`  // 最新的启动时间
+	ExitCode   int           `json:"exit_code"`   // 上一次停止状态
+	FinishedAt *time.Time    `json:"finished_at"` // 上一次停止日期
 }
 
 type ProcessGraphDriver struct {
-	Type        string
-	ReadonlyDir string // 容器只读层路径
-	WriteDir    string // 读写层
-	WorkDir     string
-	MergedDir   string
+	Type        string `json:"type"`
+	ReadonlyDir string `json:"readonly_dir"` // 容器只读层路径
+	WriteDir    string `json:"write_dir"`    // 读写层
+	WorkDir     string `json:"work_dir"`
+	MergedDir   string `json:"merged_dir"`
 }
 
-func SetProcessInfo(param RunParam, state ProcessState, w Workspace) {
+func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {
 	_, readonlyPath, writePath, mergedPath, workPath := w.PathMount()
 	p := &ProcessInfo{
 		Id:    param.Id,
