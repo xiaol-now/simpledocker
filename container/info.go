@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	. "simpledocker/logger"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -30,8 +32,7 @@ type ProcessState struct {
 	Status     ProcessStatus `json:"status"`      // 容器状态
 	Pid        int           `json:"pid"`         // 容器Pid
 	StartedAt  time.Time     `json:"started_at"`  // 最新的启动时间
-	ExitCode   int           `json:"exit_code"`   // 上一次停止状态
-	FinishedAt *time.Time    `json:"finished_at"` // 上一次停止日期
+	FinishedAt time.Time     `json:"finished_at"` // 上一次停止日期
 }
 
 type ProcessGraphDriver struct {
@@ -46,7 +47,14 @@ func (p *ProcessInfo) Workspace() *Workspace {
 	return NewWorkspace(p.Id, p.Volume)
 }
 func (p *ProcessInfo) Stop() {
-	// 停止进程
+	if err := syscall.Kill(p.State.Pid, syscall.SIGTERM); err != nil {
+		Logger.Fatalf("Stop container. pid:%d err: %s", p.State.Pid, err)
+	}
+	p.State.Status = EXITED
+	p.State.FinishedAt = time.Now()
+	encoder := json.NewEncoder(OpenProcessInfo(p.Workspace().PathRuntimeInfo()))
+	defer CloseProcessInfo()
+	_ = encoder.Encode(p)
 }
 
 func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {

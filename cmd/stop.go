@@ -15,7 +15,7 @@ var StopContainerCmd = &cobra.Command{
 		if info == nil {
 			Logger.Fatalln("Container not found")
 		}
-		if info.State.Status != container.RUNNING {
+		if info.State.Status == container.RUNNING {
 			info.Stop()
 		}
 	},

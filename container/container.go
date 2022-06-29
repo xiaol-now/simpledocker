@@ -69,11 +69,9 @@ func NewProcess() *exec.Cmd {
 	cmd.Dir = w.ProcessPath.PathMountMerged()
 	cmd.Env = append(os.Environ(), ProcessRunParam.Env...)
 	SetProcessInfo(ProcessRunParam, w, ProcessState{
-		Status:     RUNNING,
-		Pid:        cmd.Process.Pid,
-		StartedAt:  time.Now(),
-		ExitCode:   0,
-		FinishedAt: nil,
+		Status:    RUNNING,
+		Pid:       cmd.Process.Pid,
+		StartedAt: time.Now(),
 	})
 	return cmd
 }
