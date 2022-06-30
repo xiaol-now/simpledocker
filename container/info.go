@@ -74,9 +74,13 @@ func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {
 			MergedDir:   mergedPath,
 		},
 	}
+	TryMkdirOrFail(w.PathRuntime())
 	encoder := json.NewEncoder(OpenProcessInfo(w.PathRuntimeInfo()))
 	defer CloseProcessInfo()
-	_ = encoder.Encode(p)
+	err := encoder.Encode(p)
+	if err != nil {
+		Logger.Fatalf("json encode fail: %s", err)
+	}
 }
 
 func FindProcessInfo(id string) (pi *ProcessInfo) {
@@ -123,7 +127,10 @@ func OpenProcessInfo(filename string) *os.File {
 	if _config != nil {
 		return _config
 	}
-	_config, _ = os.OpenFile(filename, os.O_CREATE|os.O_RDWR, os.ModePerm)
+	_config, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, os.ModePerm)
+	if err != nil {
+		Logger.Fatalf("file open fail: %s err: %s", filename, err)
+	}
 	return _config
 }
 
