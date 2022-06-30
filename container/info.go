@@ -104,7 +104,6 @@ func FindProcessInfo(id string) *ProcessInfo {
 	defer CloseProcessInfo()
 	var pi ProcessInfo
 	_ = decoder.Decode(&pi)
-	Logger.Debugln(pi, p.PathRuntimeInfo())
 	return &pi
 }
 
