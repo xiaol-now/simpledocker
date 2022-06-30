@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
+	"path"
 	"simpledocker/container"
 	. "simpledocker/logger"
 	"strings"
@@ -15,9 +16,12 @@ var RemoveImageCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		files, _ := ioutil.ReadDir(container.ImagePath)
-		for _, f := range files {
-			if InPrefixArray(f.Name(), args) {
-				_ = os.Remove(f.Name())
+		for _, arg := range args {
+			for _, f := range files {
+				Logger.Infoln(f.Name(), arg, strings.HasPrefix(f.Name(), arg))
+				if strings.HasPrefix(f.Name(), arg) {
+					_ = os.Remove(path.Join(container.ImagePath, f.Name()))
+				}
 			}
 		}
 	},

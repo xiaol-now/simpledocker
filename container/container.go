@@ -27,17 +27,23 @@ type RunParam struct {
 var ProcessRunParam RunParam
 
 func Run() {
-	process := NewProcess()
+	process, w := NewProcess()
 	if err := process.Start(); err != nil {
 		Logger.Fatalf("Container start:%v", err)
 		return
 	}
+	// 记录容器运行状况的信息
+	SetProcessInfo(ProcessRunParam, w, ProcessState{
+		Status:    RUNNING,
+		Pid:       process.Process.Pid,
+		StartedAt: time.Now(),
+	})
 	if ProcessRunParam.TTY {
 		_ = process.Wait()
 	}
 }
 
-func NewProcess() *exec.Cmd {
+func NewProcess() (*exec.Cmd, *Workspace) {
 	args := append([]string{"InitContainer"}, ProcessRunParam.Cmd...)
 	Logger.Debugf("Init container cmd: %s", strings.Join(ProcessRunParam.Cmd, " "))
 	cmd := exec.Command("/proc/self/exe", args...)
@@ -68,12 +74,7 @@ func NewProcess() *exec.Cmd {
 
 	cmd.Dir = w.ProcessPath.PathMountMerged()
 	cmd.Env = append(os.Environ(), ProcessRunParam.Env...)
-	SetProcessInfo(ProcessRunParam, w, ProcessState{
-		Status:    RUNNING,
-		Pid:       cmd.Process.Pid,
-		StartedAt: time.Now(),
-	})
-	return cmd
+	return cmd, w
 }
 
 func GenContainerId(n int) string {
