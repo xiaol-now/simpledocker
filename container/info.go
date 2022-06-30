@@ -83,7 +83,7 @@ func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {
 	}
 }
 
-func FindProcessInfo(id string) (pi *ProcessInfo) {
+func FindProcessInfo(id string) *ProcessInfo {
 	p := ProcessPath{containerId: id}
 	dirs, err := ioutil.ReadDir(RuntimeContainerPath)
 	if err != nil {
@@ -102,8 +102,10 @@ func FindProcessInfo(id string) (pi *ProcessInfo) {
 	}
 	decoder := json.NewDecoder(OpenProcessInfo(p.PathRuntimeInfo()))
 	defer CloseProcessInfo()
-	_ = decoder.Decode(pi)
-	return nil
+	var pi ProcessInfo
+	_ = decoder.Decode(&pi)
+	Logger.Debugln(pi, p.PathRuntimeInfo())
+	return &pi
 }
 
 func ListContainerId() []string {
