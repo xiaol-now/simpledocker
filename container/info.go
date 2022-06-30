@@ -85,8 +85,7 @@ func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {
 
 func FindProcessInfo(id string) (pi *ProcessInfo) {
 	p := ProcessPath{containerId: id}
-	_ = TryMkdir(p.PathRuntime())
-	dirs, err := ioutil.ReadDir(p.PathRuntime())
+	dirs, err := ioutil.ReadDir(RuntimeContainerPath)
 	if err != nil {
 		return nil
 	}

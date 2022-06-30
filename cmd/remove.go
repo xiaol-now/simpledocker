@@ -32,11 +32,7 @@ var RemoveContainerCmd = &cobra.Command{
 	Short: "Remove one or more containers",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		Ids := container.ListContainerId()
 		for _, arg := range args {
-			if !InPrefixArray(arg, Ids) {
-				continue
-			}
 			info := container.FindProcessInfo(arg)
 			if info != nil {
 				err := info.Workspace().Remove()
