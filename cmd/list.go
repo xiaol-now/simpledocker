@@ -43,7 +43,7 @@ var ProcessListCmd = &cobra.Command{
 		for _, id := range container.ListContainerId() {
 			info := container.FindProcessInfo(id)
 			if info != nil {
-				_, _ = fmt.Fprintf(w, "%s\t%d\t%s\t\"%s\"%s\n", info.Id, info.State.Pid, info.Image, strings.Join(info.Cmd, " "), timeFormat(info.State.StartedAt))
+				_, _ = fmt.Fprintf(w, "%s\t%d\t%s\t\"%s\"\t%s\n", info.Id, info.State.Pid, info.Image, strings.Join(info.Cmd, " "), timeFormat(info.State.StartedAt))
 			}
 		}
 		_ = w.Flush()
