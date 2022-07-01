@@ -99,7 +99,6 @@ func (w *Workspace) Remove() error {
 	}
 	mountPath, _, _, _, _ := w.PathMount()
 	_ = os.RemoveAll(mountPath)
-	_ = os.RemoveAll(w.PathRuntimeInfo())
-	_ = os.RemoveAll(w.PathRuntimeLog())
+	_ = os.RemoveAll(w.PathRuntime())
 	return nil
 }

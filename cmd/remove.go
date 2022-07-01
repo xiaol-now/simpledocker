@@ -43,12 +43,3 @@ var RemoveContainerCmd = &cobra.Command{
 		}
 	},
 }
-
-func InPrefixArray(needle string, haystack []string) bool {
-	for _, s := range haystack {
-		if strings.HasPrefix(s, needle) {
-			return true
-		}
-	}
-	return false
-}
