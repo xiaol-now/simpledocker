@@ -19,6 +19,7 @@ const (
 
 type ProcessInfo struct {
 	Id          string             `json:"id"`
+	Image       string             `json:"image"`
 	Name        string             `json:"name"`
 	Env         []string           `json:"env"`
 	Cmd         []string           `json:"cmd"`
@@ -62,6 +63,7 @@ func SetProcessInfo(param RunParam, w *Workspace, state ProcessState) {
 	p := &ProcessInfo{
 		Id:     param.Id,
 		Name:   param.Name,
+		Image:  param.Image,
 		Env:    param.Env,
 		Cmd:    param.Cmd,
 		Volume: w.volumes,

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"simpledocker/container"
+	"strings"
 	"text/tabwriter"
 	"time"
 )
@@ -37,8 +38,12 @@ var ProcessListCmd = &cobra.Command{
 	Use:   "ps",
 	Short: "List containers",
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, p := range container.ListContainerId() {
-			println(p)
+		w := tabwriter.NewWriter(os.Stdout, 15, 1, 2, ' ', 0)
+		_, _ = fmt.Fprintln(w, "CONTAINER ID\tPID\tIMAGE\tCOMMAND\tCREATED")
+		for _, id := range container.ListContainerId() {
+			info := container.FindProcessInfo(id)
+			_, _ = fmt.Fprintf(w, "%s\t%d\t%s\t\"%s\"%+v\n", info.Id, info.State.Pid, info.Image, strings.Join(info.Cmd, " "), info.State.StartedAt)
 		}
+		_ = w.Flush()
 	},
 }
