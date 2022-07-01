@@ -38,11 +38,13 @@ var ProcessListCmd = &cobra.Command{
 	Use:   "ps",
 	Short: "List containers",
 	Run: func(cmd *cobra.Command, args []string) {
-		w := tabwriter.NewWriter(os.Stdout, 15, 1, 2, ' ', 0)
+		w := tabwriter.NewWriter(os.Stdout, 18, 1, 2, ' ', 0)
 		_, _ = fmt.Fprintln(w, "CONTAINER ID\tPID\tIMAGE\tCOMMAND\tCREATED")
 		for _, id := range container.ListContainerId() {
 			info := container.FindProcessInfo(id)
-			_, _ = fmt.Fprintf(w, "%s\t%d\t%s\t\"%s\"%+v\n", info.Id, info.State.Pid, info.Image, strings.Join(info.Cmd, " "), info.State.StartedAt)
+			if info != nil {
+				_, _ = fmt.Fprintf(w, "%s\t%d\t%s\t\"%s\"%s\n", info.Id, info.State.Pid, info.Image, strings.Join(info.Cmd, " "), timeFormat(info.State.StartedAt))
+			}
 		}
 		_ = w.Flush()
 	},
