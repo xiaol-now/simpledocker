@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"simpledocker/container"
 	. "simpledocker/logger"
 	"strings"
 	"syscall"
@@ -56,11 +57,11 @@ func SetUpMount() error {
 		return err
 	}
 	// mount temfs, temfs是一种基于内存的文件系统
-	err = syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
-	if err != nil {
-		logrus.Errorf("mount tempfs, err: %v", err)
-		return err
-	}
+	//err = syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
+	//if err != nil {
+	//	logrus.Errorf("mount tempfs, err: %v", err)
+	//	return err
+	//}
 
 	return nil
 }
@@ -86,11 +87,9 @@ func pivotRoot() error {
 	}
 	// 创建 rootfs/.pivot_root 存储 old_root
 	pivotDir := filepath.Join(root, ".pivot_root")
-	_, err = os.Stat(pivotDir)
-	if err != nil && os.IsNotExist(err) {
-		if err := os.Mkdir(pivotDir, 0777); err != nil {
-			return err
-		}
+	err = container.TryMkdir(pivotDir)
+	if err != nil {
+		return err
 	}
 	// pivot_root 到新的rootfs, 现在老的 old_root 是挂载在rootfs/.pivot_root
 	// 挂载点现在依然可以在mount命令中看到
